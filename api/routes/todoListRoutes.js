@@ -5,7 +5,7 @@ module.exports = function(app) {
 	// This line comes from https://enable-cors.org/server_expressjs.html
 	// it is for enabling Cross Origin Resource Sharing
 	app.use(function(req, res, next) {
-	  res.header("Access-Control-Allow-Origin", "http://localhost:3001"); // update to match the domain you will make the request from
+	  res.header("Access-Control-Allow-Origin", "http://localhost:8081"); // update to match the domain you will make the request from
 	  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	  next();
 	});
@@ -23,7 +23,7 @@ module.exports = function(app) {
 
 	// sends hello world if you do the homepage
 	app.get('/', function (req, res) {
-		res.send('Hello World!')
+		res.send('Hello from Silly Geese!')
 		console.log('Get request to homepage')
 	})
 
