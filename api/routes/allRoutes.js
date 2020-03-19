@@ -1,4 +1,7 @@
 'use strict';
+const path = require("path");
+const multer = require("multer");
+
 module.exports = function(app) {
 
 	var db = require('../models/database');
@@ -23,6 +26,35 @@ module.exports = function(app) {
 		db.db.all('SELECT * FROM users', function(err, table) {
 		        console.log(table);
 		    });
+	});
+	const storage = multer.diskStorage({
+	   destination: "./public/uploads/",
+	   filename: function(req, file, cb){
+	      cb(null,"IMAGE-" + Date.now() + path.extname(file.originalname));
+	   }
+	});
+
+	const upload = multer({
+	   storage: storage,
+	   limits:{fileSize: 1000000},
+	}).single("myImage");
+
+	/*
+	When creating or updating a user
+	Everytime a new photo is uploaded it is sent here
+	Send location of saved photo back as response
+	*/
+	app.post('/photos',function(req,res){
+		console.log('Save Image')
+		upload(req, res, (err) => {
+			console.log("Request ---", req.body);
+			console.log("Request file ---", req.file);//Here you get file.
+			if(!err){
+				console.log(req.file.path);
+				// send the path of where the pciture was saved back as the response
+				return res.send(req.file.path);
+			}
+		});
 	});
 
 	/*

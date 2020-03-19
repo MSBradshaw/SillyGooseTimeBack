@@ -1,9 +1,10 @@
 'use strict';
 
-
 exports.add_user = function(req, res, db) {
-	console.log('Adding User')
-
+	console.log('Adding User');
+	console.log('---------------');
+	console.log(req.body);
+	console.log('---------------');
 	// format the query
 	let query = "INSERT INTO users (name,email,password,interests,location,picture_path,bio) "+
 	"VALUES ('"+req.body['name']+"',"+
