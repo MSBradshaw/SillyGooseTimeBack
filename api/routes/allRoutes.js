@@ -1,4 +1,7 @@
 'use strict';
+const path = require("path");
+const multer = require("multer");
+
 module.exports = function(app) {
 
 	var db = require('../models/database');
@@ -8,7 +11,7 @@ module.exports = function(app) {
 	// This line comes from https://enable-cors.org/server_expressjs.html
 	// it is for enabling Cross Origin Resource Sharing
 	app.use(function(req, res, next) {
-	  res.header("Access-Control-Allow-Origin", "http://localhost:8081"); // update to match the domain you will make the request from
+	  res.header("Access-Control-Allow-Origin", "http://localhost:3001"); // update to match the domain you will make the request from
 	  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	  next();
 	});
@@ -24,6 +27,35 @@ module.exports = function(app) {
 		        console.log(table);
 		    });
 	});
+	const storage = multer.diskStorage({
+	   destination: "./public/uploads/",
+	   filename: function(req, file, cb){
+	      cb(null,"IMAGE-" + Date.now() + path.extname(file.originalname));
+	   }
+	});
+
+	const upload = multer({
+	   storage: storage,
+	   limits:{fileSize: 1000000},
+	}).single("myImage");
+
+	/*
+	When creating or updating a user
+	Everytime a new photo is uploaded it is sent here
+	Send location of saved photo back as response
+	*/
+	app.post('/photos',function(req,res){
+		console.log('Save Image')
+		upload(req, res, (err) => {
+			console.log("Request ---", req.body);
+			console.log("Request file ---", req.file);//Here you get file.
+			if(!err){
+				console.log(req.file.path);
+				// send the path of where the pciture was saved back as the response
+				return res.send(req.file.path);
+			}
+		});
+	});
 
 	/*
 	Use when there is a get request with a userid
@@ -35,7 +67,7 @@ module.exports = function(app) {
 
 	// sends hello world if you do the homepage
 	app.get('/', function (req, res) {
-		res.send('Hello from Silly Geese!')
+		res.send('Hello World!')
 		console.log('Get request to homepage')
 	})
 
