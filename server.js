@@ -17,6 +17,9 @@ var express = require('express'),
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use(express.static(__dirname + '/public/uploads'));
+app.listen(8081);
+
 
 var routes = require('./api/routes/allRoutes'); //importing route
 routes(app); //register the route

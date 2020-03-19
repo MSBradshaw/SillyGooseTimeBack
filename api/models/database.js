@@ -1,6 +1,7 @@
 'use strict';
 
 const sqlite3 = require('sqlite3').verbose();
+let verbose = true;
 
 // open a connection
 let db = new sqlite3.Database('./db/sillygoose.db', (err) => {
@@ -14,9 +15,9 @@ let db = new sqlite3.Database('./db/sillygoose.db', (err) => {
 db.serialize(function() {
     console.log('Running in other file')
     // THIS IS ONLY for REMEMBER TO F%$^&ING DELETE IT!!
-    db.run("DROP TABLE IF EXISTS users");
-    db.run("DROP TABLE IF EXISTS places");
-    db.run("DROP TABLE IF EXISTS matches");
+    // db.run("DROP TABLE IF EXISTS users");
+    // db.run("DROP TABLE IF EXISTS places");
+    // db.run("DROP TABLE IF EXISTS matches");
 
     db.run(
         "CREATE TABLE IF NOT EXISTS users ("+
@@ -30,17 +31,16 @@ db.serialize(function() {
         "bio TEXT NOT NULL"+
         ");"
     );
-    db.run(
-        "INSERT INTO users (name,email,password,interests,location,picture_path,bio) "+
-        "VALUES ('michael','mike@gmail.com','temp','hiking, skiing, crossfit','Boulder, CO','path/to/picture.png','Looking to have a silly goose time')"
-    )
-    db.run(
-        "INSERT INTO users (name,email,password,interests,location,picture_path,bio) "+
-        "VALUES ('lucca','lucca@gmail.com','temp','hiking, crossfit','Boulder, CO','path/to/picture2.png','Nada')"
-    )
-    db.all('SELECT * FROM users', function(err, table) {
-        console.log(table);
-    });
+
+    // db.run(
+    //     "INSERT INTO users (name,email,password,interests,location,picture_path,bio) "+
+    //     "VALUES ('Michael B','mike@gmail.com','temp','hiking, skiing, crossfit','Boulder, CO','IMAGE-1584583984792.jpg','Looking to have a silly goose time')"
+    // )
+    if(verbose){
+        db.all('SELECT * FROM users', function(err, table) {
+            console.log(table);
+        });
+    }
 
     // create the places table
     db.run(
@@ -51,13 +51,18 @@ db.serialize(function() {
         "location TEXT NOT NULL"+
         ");"
     );
-    db.run(
-        "INSERT INTO places (name,activities,location)"+
-        "VALUES ('CF Left Hand','Crossfit','Walnut St.')"
-    )
-    db.all('SELECT * FROM places', function(err, table) {
-        console.log(table);
-    });
+    // Add something to the db
+    // db.run(
+    //     "INSERT INTO places (name,activities,location)"+
+    //     "VALUES ('CF Left Hand','Crossfit','Walnut St.')"
+    // )
+
+
+    if(verbose){
+        db.all('SELECT * FROM places', function(err, table) {
+            console.log(table);
+        });
+    }
     // create the matches table
     db.run(
         "CREATE TABLE IF NOT EXISTS matches ("+
@@ -67,10 +72,12 @@ db.serialize(function() {
         "activity TEXT NOT NULL"+
         ");"
     )
-    db.run("INSERT INTO matches (people,place,activity) VALUES ('0,1','0','Crossfit')")
-    db.all('SELECT * FROM matches', function(err, table) {
-        console.log(table);
-    });
+    //db.run("INSERT INTO matches (people,place,activity) VALUES ('0,1','0','Crossfit')")
+    if(verbose){
+        db.all('SELECT * FROM matches', function(err, table) {
+            console.log(table);
+        });
+    }
 });
 
 exports.db = db;
