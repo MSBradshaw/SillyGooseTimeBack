@@ -17,6 +17,8 @@ var express = require('express'),
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+
+// This is to make public/uploads static and easily accessible for the front end
 app.use(express.static(__dirname + '/public/uploads'));
 app.listen(8081);
 

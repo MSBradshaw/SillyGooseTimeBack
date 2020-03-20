@@ -28,6 +28,7 @@ module.exports = function(app) {
 		        console.log(table);
 		    });
 	});
+
 	const storage = multer.diskStorage({
 	   destination: "./public/uploads/",
 	   filename: function(req, file, cb){
@@ -83,6 +84,15 @@ module.exports = function(app) {
 		controllers.get_user(req,res,db.db)
 	});
 
+
+	/*
+	Used to authenticate login
+	*/
+	app.post('/login',function(req,res){
+		console.log('Logging in')
+		controllers.login(req,res,db.db)
+
+	});
 	// sends hello world if you do the homepage
 	app.get('/', function (req, res) {
 		res.send('Hello World!')

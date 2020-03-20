@@ -1,5 +1,6 @@
 'use strict';
 
+// replace special characters with escaped ones to make them non-breaking for SQL statements
 function clean_for_sql (str) {
 	if(typeof str === 'undefined' ){
 		return "";
@@ -29,6 +30,17 @@ function clean_for_sql (str) {
                 return char;
         }
     });
+}
+
+// create a random id
+function makeid(length) {
+   var result           = '';
+   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
 }
 
 exports.add_user = function(req, res, db) {
@@ -65,5 +77,41 @@ exports.get_user = function(req, res,db) {
 			res.send(JSON.stringify(table))
 		});
 	console.log(results)
-	// res.send('Recieved: Getting User')
+};
+
+/*
+Delete all previous tokens for a given user
+*/
+function clean_auth_table_for_user(db,id){
+	let query = "DELETE FROM authorization WHERE userid="+id+""
+	console.log(query)
+	db.run(query)
+}
+
+exports.login = function(req, res,db) {
+	console.log(req.body)
+	// get the user with the email
+	// compare passwords
+	let query = "SELECT * FROM users WHERE email='"+req.body['email']+"'"
+	let results = ""
+	console.log(query)
+	db.all(query, function(err, table) {
+		console.log(table)
+			if(table[0]['password'] === req.body['password']){
+				// make an authorization toke of 16 random digits and characters
+				let auth_token = makeid(16)
+				var time = Date.now()
+				// delete all old auth tokens belonging to the user
+				clean_auth_table_for_user(db,table[0]['userid'])
+				// add the key to the table
+				let query2 = "INSERT INTO authorization (token, userid, time_issued) VALUES ('"+
+				auth_token+"',"+table[0]['userid']+",'"+time+"')"
+				console.log(query2)
+				db.all(query2,function(err,table){})
+				// send the key back to the front end
+				res.send(auth_token)
+			}else{
+				res.send('Fail')
+			}
+		});
 };

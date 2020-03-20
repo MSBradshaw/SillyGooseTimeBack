@@ -18,6 +18,7 @@ db.serialize(function() {
     // db.run("DROP TABLE IF EXISTS users");
     // db.run("DROP TABLE IF EXISTS places");
     // db.run("DROP TABLE IF EXISTS matches");
+    // db.run("DROP TABLE IF EXISTS authorization");
 
     db.run(
         "CREATE TABLE IF NOT EXISTS users ("+
@@ -75,6 +76,21 @@ db.serialize(function() {
     //db.run("INSERT INTO matches (people,place,activity) VALUES ('0,1','0','Crossfit')")
     if(verbose){
         db.all('SELECT * FROM matches', function(err, table) {
+            console.log(table);
+        });
+    }
+
+    // create the authorization Table
+    db.run(
+            "CREATE TABLE IF NOT EXISTS authorization ("+
+            "auth_id INTEGER PRIMARY KEY AUTOINCREMENT, "+
+            "token TEXT NOT NULL,"+
+            "userid INTEGER NOT NULL,"+
+            "time_issued INTEGER NOT NULL"+
+            ");"
+        )
+    if(verbose){
+        db.all('SELECT * FROM authorization', function(err, table) {
             console.log(table);
         });
     }
