@@ -9,10 +9,6 @@ var express = require('express'),
   //Task = require('./api/models/todoListModel'), //created model loading here
   bodyParser = require('body-parser');
 
-// mongoose instance connection url connection
-// mongoose.Promise = global.Promise;
-// mongoose.connect('mongodb://localhost/Tododb');
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -20,7 +16,7 @@ app.use(bodyParser.json());
 
 // This is to make public/uploads static and easily accessible for the front end
 app.use(express.static(__dirname + '/public/uploads'));
-app.listen(8081);
+app.listen(8082);
 
 
 var routes = require('./api/routes/allRoutes'); //importing route

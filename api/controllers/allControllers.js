@@ -109,9 +109,10 @@ exports.login = function(req, res,db) {
 				console.log(query2)
 				db.all(query2,function(err,table){})
 				// send the key back to the front end
-				res.send(auth_token)
+				var json = JSON.stringify({auth:auth_token,id:table[0]['userid']})
+				res.send(json)
 			}else{
-				res.send('Fail')
+				res.send(401, 'Email or password incorrect')
 			}
 		});
 };
