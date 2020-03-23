@@ -45,9 +45,7 @@ function makeid(length) {
 
 exports.add_user = function(req, res, db) {
 	console.log('Adding User');
-	console.log('---------------');
-	console.log(req.body);
-	console.log('---------------');
+
 	// format the query
 	let query = "INSERT INTO users (name,email,password,interests,location,picture_path,bio) "+
 	"VALUES ('"+clean_for_sql(req.body['name'])+"',"+
@@ -65,6 +63,28 @@ exports.add_user = function(req, res, db) {
 
 	// send this back to the requester so they know what happened
 	res.send('Recieved: Adding User');
+};
+
+
+
+exports.update_user = function(req, res, db) {
+	console.log('Updating User');
+
+	// format the query
+	let query = "UPDATE users SET name='NAME',email='EMAIL',password='PASSWORD',interests='INTERESTS',location='LOCATION',picture_path='PICTURE',bio='BIO' WHERE userid=ID"
+	query = query.replace('NAME',clean_for_sql(req.body['name']));
+	query = query.replace('EMAIL',clean_for_sql(req.body['email']));
+	query = query.replace('PASSWORD',clean_for_sql(req.body['password']));
+	query = query.replace('INTERESTS',clean_for_sql(req.body['interests']));
+	query = query.replace('LOCATION',clean_for_sql(req.body['location']));
+	query = query.replace('PICTURE',clean_for_sql(req.body['picture_path']));
+	query = query.replace('BIO',clean_for_sql(req.body['bio']));
+	query = query.replace('ID',req.body['userid']);
+	// run the query
+	db.run(query);
+
+	// send this back to the requester so they know what happened
+	res.send('Recieved: Updating User');
 };
 
 exports.get_user = function(req, res,db) {
