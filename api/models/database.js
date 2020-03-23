@@ -23,6 +23,7 @@ db.serialize(function() {
     db.run(
         "CREATE TABLE IF NOT EXISTS users ("+
         "userid INTEGER PRIMARY KEY AUTOINCREMENT,"+
+        "type_of_user TEXT NOT NULL,"+
         "name TEXT NOT NULL,"+
         "email TEXT NOT NULL,"+
         "password TEXT NOT NULL,"+
@@ -43,27 +44,6 @@ db.serialize(function() {
         });
     }
 
-    // create the places table
-    db.run(
-        "CREATE TABLE IF NOT EXISTS places ("+
-        "place_id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-        "name TEXT NOT NULL,"+
-        "activities TEXT NOT NULL,"+
-        "location TEXT NOT NULL"+
-        ");"
-    );
-    // Add something to the db
-    // db.run(
-    //     "INSERT INTO places (name,activities,location)"+
-    //     "VALUES ('CF Left Hand','Crossfit','Walnut St.')"
-    // )
-
-
-    if(verbose){
-        db.all('SELECT * FROM places', function(err, table) {
-            console.log(table);
-        });
-    }
     // create the matches table
     db.run(
         "CREATE TABLE IF NOT EXISTS matches ("+

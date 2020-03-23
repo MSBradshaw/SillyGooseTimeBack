@@ -47,13 +47,14 @@ exports.add_user = function(req, res, db) {
 	console.log('Adding User');
 
 	// format the query
-	let query = "INSERT INTO users (name,email,password,interests,location,picture_path,bio) "+
+	let query = "INSERT INTO users (name,email,password,interests,location,picture_path,type_of_user,bio) "+
 	"VALUES ('"+clean_for_sql(req.body['name'])+"',"+
 	"'"+clean_for_sql(req.body['email'])+"',"+
 	"'"+clean_for_sql(req.body['password'])+"',"+
 	"'"+clean_for_sql(req.body['interests'])+"',"+
 	"'"+clean_for_sql(req.body['location'])+"',"+
 	"'"+clean_for_sql(req.body['picture_path'])+"',"+
+	"'"+clean_for_sql(req.body['type_of_user'])+"',"+
 	"'"+clean_for_sql(req.body['bio'])+"')";
 
 	console.log(query);
