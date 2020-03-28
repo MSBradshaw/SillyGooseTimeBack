@@ -10,6 +10,10 @@ module.exports = function(app) {
 
 	var controllers = require('../controllers/allControllers');
 
+	// var mf = require('../../matchesfunctions');
+	// db.db.run('UPDATE users SET matches=null')
+	// mf.make_matches(db.db)
+
 	// Enable Cross Origin Resource Sharing
 	app.use(cors())
 
@@ -92,6 +96,34 @@ module.exports = function(app) {
 		controllers.get_user(req,res,db.db)
 	});
 
+
+	/*
+	Use when there is a post request to matches
+	Sends back the an object of matches and users involved in those matches
+	*/
+	app.post('/matches',function(req,res){
+		// TODO check if the authtoken is good
+		controllers.get_user_matches(req,res,db.db)
+	});
+
+	/*
+	Use when there is a post request to matches
+	Sends back the an object of matches and users involved in those matches
+	*/
+	app.patch('/matches',function(req,res){
+		// TODO check if the authtoken is good
+		console.log('Updating')
+		controllers.update_user_matches(req,res,db.db)
+	});
+
+
+	/*
+	Use when there is a get request with a match id
+	Sends back the JSONed version of the requested user's information
+	*/
+	app.get('/match/:match_id',function(req,res){
+		controllers.get_match(req,res,db.db)
+	});
 
 	/*
 	Used to authenticate login

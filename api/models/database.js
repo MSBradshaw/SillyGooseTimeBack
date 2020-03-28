@@ -30,7 +30,8 @@ db.serialize(function() {
         "interests TEXT NOT NULL,"+
         "location TEXT NOT NULL,"+
         "picture_path TEXT NOT NULL,"+
-        "bio TEXT NOT NULL"+
+        "bio TEXT NOT NULL,"+
+        "matches TEXT"+
         ");"
     );
 
@@ -48,9 +49,10 @@ db.serialize(function() {
     db.run(
         "CREATE TABLE IF NOT EXISTS matches ("+
         "match_id INTEGER PRIMARY KEY AUTOINCREMENT, "+
-        "people TEXT NOT NULL,"+
+        "people TEXT NOT NULL,"+ // list formated string of userids "1,4,5,7"
         "place TEXT NOT NULL,"+
-        "activity TEXT NOT NULL"+
+        "activity TEXT NOT NULL,"+
+        "status TEXT NOT NULL"+ // json of user (corresponds to the people value) decisions {1:'pending',4:'pending',5:'rejected',7:'accepted'}
         ");"
     )
     //db.run("INSERT INTO matches (people,place,activity) VALUES ('0,1','0','Crossfit')")
