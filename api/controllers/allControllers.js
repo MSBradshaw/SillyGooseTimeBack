@@ -182,6 +182,7 @@ function clean_auth_table_for_user(db,id){
 
 exports.login = function(req, res,db) {
 	console.log(req.body)
+	console.log("============")
 	// get the user with the email
 	// compare passwords
 	let query = "SELECT * FROM users WHERE email='"+req.body['email']+"'"
