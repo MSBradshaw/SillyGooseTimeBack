@@ -19,6 +19,7 @@
   "homepage": "https://github.com/MSBradshaw/SillyGooseTimeBack#readme",
   "devDependencies": {
     "aws-sdk": "^2.639.0",
+    "mocha": "^7.1.1",
     "nodemon": "^2.0.2"
   },
   "dependencies": {
