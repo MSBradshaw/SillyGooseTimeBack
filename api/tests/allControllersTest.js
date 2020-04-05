@@ -6,3 +6,16 @@ describe('Array', function() {
     });
   });
 });
+
+
+describe('User', function() {
+  describe('#add_user()', function() {
+    it('should add a new user', function(done) {
+      var user = new User('Luna');
+      user.save(function(err) {
+        if (err) done(err);
+        else done();
+      });
+    });
+  });
+});
