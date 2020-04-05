@@ -14,7 +14,7 @@ let db = new sqlite3.Database('./db/sillygoose.db', (err) => {
 // try doing something with the connection
 db.serialize(function() {
     console.log('Running in other file')
-    // THIS IS ONLY for REMEMBER TO F%$^&ING DELETE IT!!
+    // THIS IS ONLY for testing REMEMBER TO F%$^&ING DELETE IT!!
     // db.run("DROP TABLE IF EXISTS users");
     // db.run("DROP TABLE IF EXISTS places");
     // db.run("DROP TABLE IF EXISTS matches");
