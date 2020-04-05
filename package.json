@@ -19,7 +19,8 @@
   "homepage": "https://github.com/MSBradshaw/SillyGooseTimeBack#readme",
   "devDependencies": {
     "aws-sdk": "^2.639.0",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "node-pre-gyp": "0.12.0"
   },
   "dependencies": {
     "cors": "^2.8.5",
