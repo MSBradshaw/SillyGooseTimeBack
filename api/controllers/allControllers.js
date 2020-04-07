@@ -87,38 +87,41 @@ exports.update_user = function (req, res, db) {
 };
 
 exports.get_user = function (req, res, db) {
-    console.log('Getting User id:' + req.params['userid'])
-    let query = "SELECT * FROM users WHERE userid=" + req.params['userid']
-    let results = ""
+    console.log('Getting User id:' + req.params['userid']);
+    let query = "SELECT * FROM users WHERE ID=" + req.params['userid'];
+    let results = "";
     db.all(query, function (err, table) {
-        results = table
+        if (err) {
+            console.error(err.message);
+        }
+        results = table;
         console.log(table);
-        res.send(JSON.stringify(table))
+        res.send(JSON.stringify(table));
     });
     console.log(results)
 };
 
 
 exports.get_user_matches = function (req, res, db) {
-    console.log(req.body['userid'])
-    var statement = "SELECT * FROM matches WHERE (people LIKE 'ID,%') OR (people LIKE '%,ID,%') OR (people LIKE '%,ID')"
-    var sql_statement = statement.replace(/ID/g, req.body['userid'])
+    console.log(req.body['userid']);
+    let statement = "SELECT * FROM matches WHERE (people LIKE 'ID,%') OR (people LIKE '%,ID,%') OR (people LIKE '%,ID')"
+    let sql_statement = statement.replace(/ID/g, req.body['userid']);
 
     db.all(sql_statement, function (err, activity_table) {
-        var people = []
-        for (var i in activity_table) {
+        var people = [];
+        for (let i in activity_table) {
             people = people.concat(activity_table[i]['people'].split(','))
         }
-        for (var i in activity_table) {
+        for (let i in activity_table) {
             people = people.concat(activity_table[i]['place'])
         }
-        people = [...new Set(people)]
+        people = [...new Set(people)];
         // now select all the people that are related to this activity
-        console.log(people.toString())
+        console.log(people.toString());
         var users_statement = "SELECT userid,name,picture_path,type_of_user FROM users WHERE userid IN (PEOPLE)"
-        users_statement = users_statement.replace('PEOPLE', people.toString())
+        users_statement = users_statement.replace('PEOPLE', people.toString());
         db.all(users_statement, function (err, users_table) {
-            console.log(users_table)
+            console.log(users_table);
             res.send({'matches': activity_table, 'users': users_table})
         })
 
@@ -149,7 +152,7 @@ exports.get_match = function (req, res, db) {
         })
 
     })
-}
+};
 
 exports.update_user_matches = function (req, res, db) {
     console.log(req.body['userid'])
@@ -169,7 +172,7 @@ exports.update_user_matches = function (req, res, db) {
             res.send('Updated')
         })
     })
-}
+};
 
 /*
 Delete all previous tokens for a given user
