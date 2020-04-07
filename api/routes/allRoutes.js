@@ -91,6 +91,7 @@ module.exports = function (app) {
     Sends back the JSONed version of the requested user's information
     */
     app.get('/users/:userid', function (req, res) {
+
         controllers.get_user(req, res, db.db);
     });
 
