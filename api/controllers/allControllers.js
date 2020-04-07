@@ -88,7 +88,7 @@ exports.update_user = function (req, res, db) {
 
 exports.get_user = function (req, res, db) {
     console.log('Getting User id:' + req.params['userid']);
-    let query = "SELECT * FROM users WHERE ID=" + req.params['userid'];
+    let query = "SELECT * FROM users WHERE userid=" + req.params['userid'];
     let results = "";
     db.all(query, function (err, table) {
         if (err) {
