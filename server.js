@@ -3,13 +3,13 @@
 //https://www.codementor.io/@olatundegaruba/nodejs-restful-apis-in-10-minutes-q0sgsfhbd
 
 var express = require('express'),
-  app = express(),
-  port = process.env.PORT || 8081,
-  //Task = require('./api/models/todoListModel'), //created model loading here
-  bodyParser = require('body-parser');
+    app = express(),
+    port = process.env.PORT || 8081,
+    //Task = require('./api/models/todoListModel'), //created model loading here
+    bodyParser = require('body-parser');
 
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 
