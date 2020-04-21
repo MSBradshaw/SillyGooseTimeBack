@@ -141,10 +141,7 @@ function update_matches_for_user(db, userid, matchid) {
         console.log('Final statement')
         console.log(sql_update_statement)
         db.all(sql_update_statement,function(err,table){
-            db.all('SELECT * FROM matches',function(err,table){
-                console.log('All Matches')
-                console.log(table)
-            })
+            
         });
         // todo remove all matches old matches and see if the new ones here work
     })
@@ -241,31 +238,39 @@ function make_matches_for_user(email,db){
 
 exports.add_user = function (req, res, db) {
     console.log('Adding User');
+    // check if the email already exists
+    let template =  "SELECT * FROM users WHERE email='EMAIL'"
+    let statement = template.replace('EMAIL',clean_for_sql(req.body['email']))
+    db.all(statement,function(err,table){
+        if(table.length !== 0){
+            res.send(200, 'That email is already registered')
+        }else{
+            // Add the user to the DB
+            // format the query
+            let query = "INSERT INTO users (name,email,password,interests,location,picture_path,type_of_user,bio) " +
+                "VALUES ('" + clean_for_sql(req.body['name']) + "'," +
+                "'" + clean_for_sql(req.body['email']) + "'," +
+                "'" + clean_for_sql(req.body['password']) + "'," +
+                "'" + clean_for_sql(req.body['interests']) + "'," +
+                "'" + clean_for_sql(req.body['location']) + "'," +
+                "'" + clean_for_sql(req.body['picture_path']) + "'," +
+                "'" + clean_for_sql(req.body['type_of_user']) + "'," +
+                "'" + clean_for_sql(req.body['bio']) + "')";
 
-    // format the query
-    let query = "INSERT INTO users (name,email,password,interests,location,picture_path,type_of_user,bio) " +
-        "VALUES ('" + clean_for_sql(req.body['name']) + "'," +
-        "'" + clean_for_sql(req.body['email']) + "'," +
-        "'" + clean_for_sql(req.body['password']) + "'," +
-        "'" + clean_for_sql(req.body['interests']) + "'," +
-        "'" + clean_for_sql(req.body['location']) + "'," +
-        "'" + clean_for_sql(req.body['picture_path']) + "'," +
-        "'" + clean_for_sql(req.body['type_of_user']) + "'," +
-        "'" + clean_for_sql(req.body['bio']) + "')";
+            console.log(query);
 
-    console.log(query);
+            // run the query
+            db.run(query);
 
-    // run the query
-    db.run(query);
+            // send this back to the requester so they know what happened
+            res.send('Recieved: Adding User');
 
-    // send this back to the requester so they know what happened
-    res.send('Recieved: Adding User');
-
-    // TODO make matches for this user - not for places
-    if(req.body['type_of_user'] == 'users'){
-        make_matches_for_user(req.body['email'],db);
-    }
-    // db.run('DELETE FROM users WHERE email="EMAIL";'.replace('EMAIL',req.body['email']))
+            // TODO make matches for this user - not for places
+            if(req.body['type_of_user'] == 'users'){
+                make_matches_for_user(req.body['email'],db);
+            }
+        }
+    })
 };
 
 exports.update_user = function (req, res, db) {
