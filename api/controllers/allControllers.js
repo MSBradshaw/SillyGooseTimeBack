@@ -43,6 +43,202 @@ function makeid(length) {
     return result;
 }
 
+// 100% stolen from https://stackoverflow.com/questions/19269545/how-to-get-n-no-elements-randomly-from-an-array/38571132
+function getRandom(arr, n) {
+    var result = new Array(n),
+        len = arr.length,
+        taken = new Array(len);
+    if (n > len)
+        throw new RangeError("getRandom: more elements taken than available");
+    while (n--) {
+        var x = Math.floor(Math.random() * len);
+        result[n] = arr[x in taken ? taken[x] : x];
+        taken[x] = --len in taken ? taken[len] : len;
+    }
+    return result;
+}
+
+/*
+Given the results of an sql query represetning users with a common interest.
+Return a list of strings containing unique sets of userids
+*/
+function group_people(people,userid) {
+    console.log('make groups of 3-5 people -- this should be people ids')
+    // make an array of the indexes for people
+    let people_indexes = []
+    for (var i = 0; i < people.length; i++) {
+        people_indexes.push(people[i]['userid']);
+    }
+    // make groups of different sizes
+    var groups = []
+    for (var i = 2; i < 5; i++) {
+        // console.log('\tGroupings of ' + i)
+        if (i > (people.length)) {
+            continue;
+        }
+        // make a random group of people for each person (so everyone is part of atleast 1 group)
+        for (var j = 0; j < people.length; j++) {
+            var temp_arr = [...people_indexes];
+            var res = temp_arr.splice(j, 1);
+            var group = getRandom(temp_arr, i - 1);
+            group.push(people_indexes[j])
+            group.push(userid)
+            group.sort()
+            groups.push(group.toString())
+            // console.log('\t\t' + group.toString())
+        }
+    }
+    groups = [...new Set(groups)]
+    return groups
+}
+
+/*
+*/
+function generate_new_matches(db, place_obj, groups) {
+    console.log('generating new matches')
+    var statement = "INSERT INTO matches (people,place,activity,status) VALUES ('PEOPLE','PLACE','ACTIVITY','STATUS')"
+    for (var g in groups) {
+        var group = groups[g].split(',')
+        var status = {}
+        for (var i in group) {
+            status[group[i]] = 'pending'
+        }
+        //console.log(status)
+        var sql_statement = statement.replace('PEOPLE', groups[g])
+        sql_statement = sql_statement.replace('PLACE', place_obj['userid'])
+        sql_statement = sql_statement.replace('ACTIVITY', place_obj['interests'])
+        sql_statement = sql_statement.replace('STATUS', JSON.stringify(status))
+        //console.log(sql_statement)
+        db.run(sql_statement, function (err) {
+            console.log('----------------last ID: ' + this.lastID)
+            for (var i in group) {
+                update_matches_for_user(db, group[i], this.lastID);
+            }
+        });
+    }
+}
+
+/*
+*/
+function update_matches_for_user(db, userid, matchid) {
+    console.log('\tCreating match for user ' + userid)
+    // get the user's current matches
+    var update_statement = "UPDATE users SET matches='MATCHES' WHERE userid=USERID"
+    var select_statement = "SELECT * FROM users WHERE userid=" + parseInt(userid);
+    db.all(select_statement, function (err, table) {
+        //append and update
+        var matches_string = ''
+        console.log('----------')
+        if (table[0]['matches'] === null) {
+            matches_string = matchid
+        } else {
+            matches_string = table[0]['matches'] + ',' + matchid
+        }
+        console.log(matches_string)
+        console.log('----------')
+        var sql_update_statement = update_statement.replace('MATCHES', matches_string)
+        sql_update_statement = sql_update_statement.replace('USERID', parseInt(userid))
+        console.log('Final statement')
+        console.log(sql_update_statement)
+        db.all(sql_update_statement,function(err,table){
+            db.all('SELECT * FROM matches',function(err,table){
+                console.log('All Matches')
+                console.log(table)
+            })
+        });
+        // todo remove all matches old matches and see if the new ones here work
+    })
+}
+
+function get_people_for_activity(interest,userid,place_obj,db){
+    // let template = "SELECT *  FROM users WHERE interests LIKE 'INTEREST' and type_of_user='users';"
+    // let template = "SELECT *  FROM users WHERE interests LIKE 'INTEREST' AND type_of_user='users';"
+    let template = "SELECT *  FROM users WHERE type_of_user='users' AND interests LIKE '%INTEREST%';"
+    let statement = template.replace('INTEREST',interest);
+    db.all(statement,function(err, table){
+        if(err){
+            console.log(err.message)
+        }
+        console.log('--We the people--');
+        // make sure there are enough people to form groups
+        if(table.length < 3){
+            console.log('Not enough people to form a group to do ' + interest + ' with userid ' + userid)
+            return None;
+        }
+        // console.log(table);
+        var groups = group_people(table,userid);
+        console.log(groups)
+        // choose a random 3 groups
+        var choosen_groups = [];
+        if(groups.length > 3){
+            var choosen_groups = getRandom(groups,3);
+        }else{
+            // there are less than or equal to 3 groups so do all of them
+            choosen_groups = groups;
+        }
+        // make the matches for the groups!
+        generate_new_matches(db,place_obj,choosen_groups);
+    })
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+/*Find the places where you can do that activity.
+If there are no places to do that activity you make matches for it*/
+
+function get_places_for_activity(interest,userid,db){
+    let template = "SELECT * FROM users WHERE type_of_user='place' AND interests LIKE '%INTEREST%';"
+    let statement = template.replace('INTEREST',interest)
+    console.log(statement)
+    db.all(statement,function(err, table){
+        if (err) {
+            console.error(err.message);
+        }
+        console.log('--PLACES--');
+        console.log(table)
+        if(table.length == 0){
+            console.log('No places');
+        }else{
+            console.log('There are places');
+            // chose one of the places at random
+            let index = getRandomInt(table.length - 1)
+            // find people to do the activity with
+            get_people_for_activity(interest,userid,table[index],db)
+        }
+    })
+}
+
+
+/*Given a user's email and a db connection
+Get the userid and their interests
+Call other function to make matches with other users for each interest
+*/
+
+function make_matches_for_user(email,db){
+    // get the user's ID and interests
+    let template = "SELECT userid,interests FROM users WHERE email='EMAIL'"
+    let statement = template.replace('EMAIL',email);
+
+    db.all(statement, function (err, table) {
+        if (err) {
+            console.error(err.message);
+        }
+        console.log('****')
+        let id = table[0]['userid'];
+        let interests = table[0]['interests'];
+        // split interests into an array
+        interests = interests.replace(/ /g,'');
+        let interests_array = interests.split(',');
+        console.log(interests_array);
+        // for each interest find users that share this interest
+        for(var i in interests_array){
+            get_places_for_activity(interests_array[i],id,db)
+        }
+    });
+}
+
 exports.add_user = function (req, res, db) {
     console.log('Adding User');
 
@@ -64,6 +260,12 @@ exports.add_user = function (req, res, db) {
 
     // send this back to the requester so they know what happened
     res.send('Recieved: Adding User');
+
+    // TODO make matches for this user - not for places
+    if(req.body['type_of_user'] == 'users'){
+        make_matches_for_user(req.body['email'],db);
+    }
+    // db.run('DELETE FROM users WHERE email="EMAIL";'.replace('EMAIL',req.body['email']))
 };
 
 exports.update_user = function (req, res, db) {

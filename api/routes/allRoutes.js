@@ -24,7 +24,7 @@ module.exports = function (app) {
         controllers.add_user(req, res, db.db);
         console.log('Printing Users Table');
         db.db.all('SELECT * FROM users', function (err, table) {
-            console.log(table);
+            // console.log(table);
         });
     });
 

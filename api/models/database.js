@@ -28,7 +28,7 @@ let db = new sqlite3.Database('./db/sillygoose.db', (err) => {
 // try doing something with the connection
 db.serialize(function () {
     console.log('Running in other file')
-    // THIS IS ONLY for REMEMBER TO F%$^&ING DELETE IT!!
+    // THIS IS ONLY for testing REMEMBER TO F%$^&ING DELETE IT!!
     // db.run("DROP TABLE IF EXISTS users");
     // db.run("DROP TABLE IF EXISTS places");
     // db.run("DROP TABLE IF EXISTS matches");
@@ -71,6 +71,7 @@ db.serialize(function () {
     )
     //db.run("INSERT INTO matches (people,place,activity) VALUES ('0,1','0','Crossfit')")
     if (verbose) {
+        
         db.all('SELECT * FROM matches', function (err, table) {
             console.log(table);
         });
@@ -87,7 +88,7 @@ db.serialize(function () {
     )
     if (verbose) {
         db.all('SELECT * FROM authorization', function (err, table) {
-            console.log(table);
+            // console.log(table);
         });
     }
 });
