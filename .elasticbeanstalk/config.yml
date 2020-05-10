@@ -1,0 +1,21 @@
+branch-defaults:
+  develop:
+    environment: null
+    group_suffix: null
+  master:
+    environment: sillygoosetimeback-dev
+    group_suffix: null
+global:
+  application_name: SillyGooseTimeBack
+  branch: null
+  default_ec2_keyname: null
+  default_platform: node.js
+  default_region: us-east-2
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: sillygoose
+  repository: null
+  sc: git
+  workspace_type: Application
